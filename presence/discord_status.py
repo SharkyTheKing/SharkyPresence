@@ -2,9 +2,8 @@ import json
 import sys
 import time
 
-from pypresence import Presence
-
 from exceptions import ButtonsNotDict, FileNotFound, JSONLoadError, NoClientID, TooManyButtons
+from pypresence import Presence
 
 # May need to look at this later.
 

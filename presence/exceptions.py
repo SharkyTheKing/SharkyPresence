@@ -75,10 +75,7 @@ class TooManyButtons(Exception):
     """
 
     def __init__(self):
-        self.message = (
-            "You can only have two buttons.\n"
-            "Please adjust your settings.json file."
-        )
+        self.message = "You can only have two buttons.\nPlease adjust your settings.json file."
 
         super().__init__(self.message)
 
