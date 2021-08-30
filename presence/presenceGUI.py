@@ -1,12 +1,10 @@
 import asyncio
+import pickle
 import tkinter as tk
 from datetime import datetime, timedelta
 from tkinter import messagebox
 
 from pypresence import Presence
-
-# import pickle
-
 
 # Look at https://www.geeksforgeeks.org/python-tkinter-validating-entry-widget/ for entry
 # https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
@@ -30,29 +28,33 @@ class PresenceGUI:
             "buttons": "Buttons",
         }
         self.master.title("Sharky PyPresence")
-        # master.geometry("300x300")
         self.master.geometry("435x320")
         self.master.configure(bg="gray")
         self.master.iconbitmap("data/myicon.ico")
+
         self.started_rpc = False
         self.wait_until = None
-        # self.restore_file = "data/settings.pickle"
+        self.restore_file = "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         # vcdm = master.register(
         #    self.presence_form(self.LIST_OF_FIELDS),
         # ) # we have to wrap the command
+        self.start_building_widget()
+        self.restore_state()
 
+    def start_building_widget(self):
         ents = self.presence_form(self.DICT_OF_FIELDS)
 
-        b1 = tk.Button(
-            root, text="Process", command=(lambda e=ents: self.temp_rpc(e))
-        )  # Fetch returns the content
+        b1 = tk.Button(self.master, text="Process", command=(lambda e=ents: self.temp_rpc(e)))
         b1.pack(side=tk.LEFT, padx=5, pady=5)
-        b2 = tk.Button(root, text="Quit", command=root.quit)
+        b2 = tk.Button(self.master, text="Quit", command=(lambda e=ents: self.save_state(e)))
         b2.pack(side=tk.LEFT, padx=5, pady=5)
-        b3 = tk.Button(root, text="Help", command=(lambda e=root: self.help_window()))
+        b3 = tk.Button(self.master, text="Help", command=(lambda e=root: self.help_window()))
         b3.pack(side=tk.RIGHT, padx=5, pady=5)
+
+        # self.master.wm_protocol("WM_DELETE_WINDOW", self.save_state)
+        #
 
     def presence_form(self, fields):
         entries = []
@@ -204,10 +206,10 @@ class PresenceGUI:
                 if text:
                     entry_dict[field] = text
                 else:
-                    print(field)
+                    # print(field)
                     entry_dict.pop(field)
             # print('%s: "%s"' % (field, text))
-        print(entry_dict)
+        # print(entry_dict)
         return entry_dict
 
     def temp_rpc(self, entry_info):
@@ -232,6 +234,36 @@ class PresenceGUI:
 
         self.RPC.update(**entries)
         self.started_rpc = True
+
+    def save_state(self, entry):
+        text = entry[0][1].get()  # State
+        # entry[0][1].delete(0, tk.END)
+        # entry[0][1].insert(0, "234235") # example.
+        data = {"state": text}
+        try:
+            with open(self.restore_file, "wb") as f:
+                pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+        except Exception as e:
+            print("error saving state:", str(e))
+
+        self.master.quit()
+
+    def restore_state(self):
+        """
+        Currently will only restore the state, everything else is manual
+        """
+        # https://stackoverflow.com/questions/6112482/how-to-get-the-tkinter-label-text
+        try:
+            with open(self.restore_file, "rb") as f:
+                data = pickle.load(f)
+            for child in self.master.winfo_children():
+                if child.winfo_children()[0]["text"] == "Client ID":
+                    child.winfo_children()[1].insert(0, data["state"])
+                    break
+            # self.previous_values = data["client_id"]
+            # self.expressionEntry.configure(values=self.previous_values)
+        except Exception as e:
+            print("error loading saved state:", str(e))
 
 
 if __name__ == "__main__":
