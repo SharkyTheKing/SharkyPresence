@@ -1,12 +1,12 @@
+import asyncio
 import tkinter as tk
+from datetime import datetime, timedelta
 from tkinter import messagebox
 
-from datetime import datetime, timedelta
-import asyncio
-
-#import pickle
-
 from pypresence import Presence
+
+# import pickle
+
 
 # Look at https://www.geeksforgeeks.org/python-tkinter-validating-entry-widget/ for entry
 # https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
@@ -36,7 +36,7 @@ class PresenceGUI:
         self.master.iconbitmap("data/myicon.ico")
         self.started_rpc = False
         self.wait_until = None
-        #self.restore_file = "data/settings.pickle"
+        # self.restore_file = "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         # vcdm = master.register(
