@@ -17,3 +17,13 @@
         | adventure\/data
     )/
     '''
+
+[tool.isort]
+    profile = 'black'
+    line_length = 99
+    atomic = true
+    sections = ['FUTURE','STDLIB','FIRSTPARTY','THIRDPARTY','LOCALFOLDER']
+    known_third_party = ['pypresence']
+    known_first_party = [
+        'presenceGUI'
+    ]
