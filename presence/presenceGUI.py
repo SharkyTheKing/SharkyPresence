@@ -1,10 +1,9 @@
 import asyncio
+import pathlib
 import pickle
 import tkinter as tk
 from datetime import datetime, timedelta
 from tkinter import messagebox
-
-import pathlib
 
 from pypresence import Presence
 
