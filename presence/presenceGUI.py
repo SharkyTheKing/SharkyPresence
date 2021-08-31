@@ -39,9 +39,6 @@ class PresenceGUI:
         self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
-        # vcdm = master.register(
-        #    self.presence_form(self.LIST_OF_FIELDS),
-        # ) # we have to wrap the command
         self.start_building_widget()
         self.restore_state()
 
@@ -54,7 +51,6 @@ class PresenceGUI:
         b2.pack(side=tk.LEFT, padx=5, pady=5)
         b3 = tk.Button(self.master, text="Help", command=(lambda e=root: self.help_window()))
         b3.pack(side=tk.RIGHT, padx=5, pady=5)
-
 
     def presence_form(self, fields):
         entries = []
