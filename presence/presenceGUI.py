@@ -4,6 +4,8 @@ import tkinter as tk
 from datetime import datetime, timedelta
 from tkinter import messagebox
 
+import pathlib
+
 from pypresence import Presence
 
 # Look at https://www.geeksforgeeks.org/python-tkinter-validating-entry-widget/ for entry
@@ -30,11 +32,11 @@ class PresenceGUI:
         self.master.title("Sharky PyPresence")
         self.master.geometry("435x320")
         self.master.configure(bg="gray")
-        self.master.iconbitmap("data/myicon.ico")
+        self.master.iconbitmap(pathlib.Path(__file__).parent / "data/myicon.ico")
 
         self.started_rpc = False
         self.wait_until = None
-        self.restore_file = "data/settings.pickle"
+        self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         # vcdm = master.register(
