@@ -1,10 +1,9 @@
 import asyncio
+import pathlib
 import pickle
 import tkinter as tk
 from datetime import datetime, timedelta
 from tkinter import messagebox
-
-import pathlib
 
 from pypresence import Presence
 
@@ -29,10 +28,11 @@ class PresenceGUI:
             "small_text": "Small Image Text",
             "buttons": "Buttons",
         }
+        self.icon_path = pathlib.Path(__file__).parent / "data/myicon.ico"
         self.master.title("Sharky PyPresence")
         self.master.geometry("435x320")
         self.master.configure(bg="gray")
-        self.master.iconbitmap(pathlib.Path(__file__).parent / "data/myicon.ico")
+        self.master.iconbitmap(self.icon_path)
 
         self.started_rpc = False
         self.wait_until = None
@@ -140,9 +140,22 @@ class PresenceGUI:
         helpwindow.title("Help Menu")
         helpwindow.geometry("400x400")
         helpwindow.config(bg="gray")
+        helpwindow.iconbitmap(self.icon_path)
         helpwindow.resizable(width=False, height=False)
 
-        tk.Label(helpwindow, text="Test", bg="gray").pack()
+        # text = tk.Text(helpwindow, wrap=tk.WORD, bg="gray")
+        # text.insert(
+        #    tk.INSERT,
+        #    "Hello! If you are new to this program. Please have a read at the [README file](https://github.com/SharkyTheKing/SharkyPresence/tree/fr/README-Update#sharkypresences) on the repo.",
+        # )
+        # text.pack()
+        message = (
+            "Hello! If you are new to this program. "
+            "Please have a read at the README file on the repo."
+        )
+        label = tk.Label(helpwindow, text=message, bg="gray")
+        label.configure(wraplength=350, justify=tk.LEFT)
+        label.pack()
 
     def _error_window(self, error: dict):
         key_view = error.keys()
