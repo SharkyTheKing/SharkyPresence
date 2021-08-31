@@ -143,12 +143,6 @@ class PresenceGUI:
         helpwindow.iconbitmap(self.icon_path)
         helpwindow.resizable(width=False, height=False)
 
-        # text = tk.Text(helpwindow, wrap=tk.WORD, bg="gray")
-        # text.insert(
-        #    tk.INSERT,
-        #    "Hello! If you are new to this program. Please have a read at the [README file](https://github.com/SharkyTheKing/SharkyPresence/tree/fr/README-Update#sharkypresences) on the repo.",
-        # )
-        # text.pack()
         message = (
             "Hello! If you are new to this program. "
             "Please have a read at the README file on the repo."
