@@ -14,7 +14,7 @@ This readme is a work in progress.
 ```
 
 ## Run the app:
-> ```
+```
 > python .\presence\presenceGUI.py
 ```
 
