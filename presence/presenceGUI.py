@@ -55,8 +55,6 @@ class PresenceGUI:
         b3 = tk.Button(self.master, text="Help", command=(lambda e=root: self.help_window()))
         b3.pack(side=tk.RIGHT, padx=5, pady=5)
 
-        # self.master.wm_protocol("WM_DELETE_WINDOW", self.save_state)
-        #
 
     def presence_form(self, fields):
         entries = []
