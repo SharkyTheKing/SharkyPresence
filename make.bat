@@ -8,18 +8,23 @@ setlocal ENABLEDELAYEDEXPANSION
 goto %1
 
 :reformat
-isort --atomic --line-length 99 --use-parentheses .
-black -l 99 .
+isort .
+black .
 exit /B %ERRORLEVEL%
 
 :stylecheck
-isort --atomic --check --line-length 99 --use-parentheses .
-black --check -l 99 .
+isort --check .
+black --check .
 exit /B %ERRORLEVEL%
 
 :stylediff
-isort --atomic --check --diff --line-length 99 --use-parentheses .
-black --check --diff -l 99 .
+isort --check --diff .
+black --check --diff .
+exit /B %ERRORLEVEL%
+
+:updateformat
+python -m pip install isort -U
+python -m pip install black -U
 exit /B %ERRORLEVEL%
 
 :help
@@ -29,3 +34,5 @@ echo.
 echo Commands:
 echo   reformat                   Reformat all .py files being tracked by git.
 echo   stylecheck                 Check which tracked .py files need reformatting.
+echo   stylediff                  Compares the difference in style checks.
+echo   updateformat               Updates Black and Isort to latest pip version.
