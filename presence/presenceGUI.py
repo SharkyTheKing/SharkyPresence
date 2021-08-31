@@ -149,11 +149,30 @@ class PresenceGUI:
 
         message = (
             "Hello! If you are new to this program. "
-            "Please have a read at the README file on the repo."
+            "Please have a read at the README file on the repo. It"
+            " will help explain everything if it's not listed.\n\n"
+            "1. Head over to Discord's Developer Application Page.\n"
+            "Click `New Application`; give it a nice name. we're gonna use "
+            '"My Test Game" for ours. In discord\'s user pane, this will'
+            ' show as your status "Playing My Test Game"\n\n'
+            "2. Copy the `Application ID` from the website and paste "
+            "that value into the `Client ID` in our App.\n\n"
+            "3. In the website, on the left of the page, navigate to "
+            "`Rich Presence`. The `Cover Image` is not used and we can ignore it."
+            " Next, add a few images with the `Add Image(s)` button; rename the images "
+            "if needed, then click `Save Changes`. It may take several minutes for it to "
+            "properly save on discord's side.\n\n"
+            "4. In our App, the `Large Image Name` and `Small Image Name` can be set "
+            "to any image name that has been uploaded in the steps above.\n\n"
+            "5. The remaining fields in our app can be set to anything you desire."
         )
         label = tk.Label(helpwindow, text=message, bg="gray")
         label.configure(wraplength=350, justify=tk.LEFT)
         label.pack()
+        credit_label = tk.Label(helpwindow, text="Credits: SharkyTheKing", bg="gray")
+        credit_label.place(relx=0.0, rely=1.0, anchor="sw")
+        version_label = tk.Label(helpwindow, text="Version: 0.0.1", bg="gray")
+        version_label.place(relx=1.0, rely=1.0, anchor="se")
 
     def _error_window(self, error: dict):
         key_view = error.keys()
