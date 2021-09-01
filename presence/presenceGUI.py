@@ -7,12 +7,18 @@ from tkinter import messagebox
 
 from pypresence import Presence
 
+NO_CLIENT_MESSAGE = {
+    "No Client ID": (
+        "No Client ID listed.\n"
+        "You MUST have a client_id from your application for this program to work.\n\n"
+        "Please read the README.md file to review how to get your ID."
+    )
+}
+
 # Look at https://www.geeksforgeeks.org/python-tkinter-validating-entry-widget/ for entry
 # https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
 # menu https://www.geeksforgeeks.org/changing-the-colour-of-tkinter-menu-bar/
 # https://python-textbok.readthedocs.io/en/1.0/Introduction_to_GUI_Programming.html
-
-## Figure out how to store previous info
 
 
 class PresenceGUI:
@@ -35,22 +41,31 @@ class PresenceGUI:
         self.master.iconbitmap(self.icon_path)
 
         self.started_rpc = False
+        self.RPC = None
         self.wait_until = None
         self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         self.start_building_widget()
-        self.restore_state()
+        self._restore_state()
 
     def start_building_widget(self):
         ents = self.presence_form(self.DICT_OF_FIELDS)
 
         b1 = tk.Button(self.master, text="Process", command=(lambda e=ents: self.temp_rpc(e)))
         b1.pack(side=tk.LEFT, padx=5, pady=5)
-        b2 = tk.Button(self.master, text="Quit", command=(lambda e=ents: self.save_state(e)))
+
+        b2 = tk.Button(self.master, text="Stop", command=(lambda e=self.master: self._stop_rpc()))
         b2.pack(side=tk.LEFT, padx=5, pady=5)
-        b3 = tk.Button(self.master, text="Help", command=(lambda e=root: self.help_window()))
+
+        b3 = tk.Button(
+            self.master, text="Help", command=(lambda e=self.master: self.help_window())
+        )
         b3.pack(side=tk.RIGHT, padx=5, pady=5)
+
+        # b4 = tk.Button(self.master, text="Quit", command=(lambda e=ents: self._save_state(e)))
+        # b4.pack(side=tk.LEFT, padx=5, pady=5)
+        self.master.wm_protocol("WM_DELETE_WINDOW", (lambda e=ents: self._save_state(e)))
 
     def presence_form(self, fields):
         entries = []
@@ -139,20 +154,40 @@ class PresenceGUI:
 
         message = (
             "Hello! If you are new to this program. "
-            "Please have a read at the README file on the repo."
+            "Please have a read at the README file on the repo. It"
+            " will help explain everything if it's not listed.\n\n"
+            "1. Head over to Discord's Developer Application Page.\n"
+            "Click `New Application`; give it a nice name. we're gonna use "
+            '"My Test Game" for ours. In discord\'s user pane, this will'
+            ' show as your status "Playing My Test Game"\n\n'
+            "2. Copy the `Application ID` from the website and paste "
+            "that value into the `Client ID` in our App.\n\n"
+            "3. In the website, on the left of the page, navigate to "
+            "`Rich Presence`. The `Cover Image` is not used and we can ignore it."
+            " Next, add a few images with the `Add Image(s)` button; rename the images "
+            "if needed, then click `Save Changes`. It may take several minutes for it to "
+            "properly save on discord's side.\n\n"
+            "4. In our App, the `Large Image Name` and `Small Image Name` can be set "
+            "to any image name that has been uploaded in the steps above.\n\n"
+            "5. The remaining fields in our app can be set to anything you desire."
         )
         label = tk.Label(helpwindow, text=message, bg="gray")
         label.configure(wraplength=350, justify=tk.LEFT)
         label.pack()
+        credit_label = tk.Label(helpwindow, text="Credits: SharkyTheKing", bg="gray")
+        credit_label.place(relx=0.0, rely=1.0, anchor="sw")
+        version_label = tk.Label(helpwindow, text="Version: 0.0.1", bg="gray")
+        version_label.place(relx=1.0, rely=1.0, anchor="se")
 
     def _error_window(self, error: dict):
         key_view = error.keys()
         key_iterator = iter(key_view)
         first_key = next(key_iterator)
 
-        values_view = error.values()
-        value_iterator = iter(values_view)
-        first_value = next(value_iterator)
+        # values_view = error.values()
+        # value_iterator = iter(values_view)
+        # first_value = next(value_iterator)
+        first_value = error[first_key]
 
         messagebox.showerror(first_key, first_value)
 
@@ -209,23 +244,33 @@ class PresenceGUI:
                 if text:
                     entry_dict[field] = text
                 else:
-                    # print(field)
                     entry_dict.pop(field)
-            # print('%s: "%s"' % (field, text))
         # print(entry_dict)
         return entry_dict
 
     def temp_rpc(self, entry_info):
         if self.wait_until:
             now = datetime.now()
-            while self.wait_until > now:
-                asyncio.run(asyncio.sleep(1))
-                now = datetime.now()
+            if self.wait_until > now:
+                time_left = (self.wait_until - now).seconds
+                return self._error_window(
+                    {
+                        "Timeout Error": (
+                            "Please do not repeatedly push process.\n\n"
+                            "You must wait 15 seconds before you update your status.\n\n"
+                            "You have {seconds} seconds left to wait.".format(seconds=time_left)
+                        )
+                    }
+                )
 
         if self.started_rpc is False:
             entries = self.process_information(entry_info)
-            self.RPC = Presence(entries["client_id"])
-            self.RPC.connect()
+            try:
+                self.RPC = Presence(entries["client_id"])
+                self.RPC.connect()
+            except KeyError:
+                return self._error_window(NO_CLIENT_MESSAGE)
+
             entries.pop("client_id")
 
         else:
@@ -238,11 +283,23 @@ class PresenceGUI:
         self.RPC.update(**entries)
         self.started_rpc = True
 
-    def save_state(self, entry):
-        text = entry[0][1].get()  # State
+    def _stop_rpc(self):
+        if not self.RPC:
+            return
+        self.RPC.close()
+        self.started_rpc = False
+
+    def _save_state(self, entry):
+        text = entry[0][1].get()  # client_id
         # entry[0][1].delete(0, tk.END)
         # entry[0][1].insert(0, "234235") # example.
-        data = {"state": text}
+        data = {}  # "client_id": text}
+
+        for widget in entry:
+            label = widget[0]
+            text = widget[1].get()
+            data[label] = text
+
         try:
             with open(self.restore_file, "wb") as f:
                 pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
@@ -251,26 +308,66 @@ class PresenceGUI:
 
         self.master.quit()
 
-    def restore_state(self):
+    def _restore_state(self):
         """
         Currently will only restore the state, everything else is manual
         """
         # https://stackoverflow.com/questions/6112482/how-to-get-the-tkinter-label-text
+        data = False
         try:
             with open(self.restore_file, "rb") as f:
                 data = pickle.load(f)
-            for child in self.master.winfo_children():
-                if child.winfo_children()[0]["text"] == "Client ID":
-                    child.winfo_children()[1].insert(0, data["state"])
-                    break
-            # self.previous_values = data["client_id"]
-            # self.expressionEntry.configure(values=self.previous_values)
+        except FileNotFoundError:  # File will get created on save state anyways.
+            pass
         except Exception as e:
             print("error loading saved state:", str(e))
 
+        if not data:
+            return
 
-if __name__ == "__main__":
+        self._restore_values(data)
+
+    def _restore_values(self, data):
+        """
+        Internal function to restore all entry state in UI
+        """
+        for child in self.master.winfo_children():
+            try:
+                label = child.winfo_children()[0]["text"]
+                entry = child.winfo_children()[1]
+                if label == "Client ID":
+                    entry.insert(0, data["client_id"])
+                elif label == "State":  # This works
+                    entry.insert(0, data["state"])
+                elif label == "Details":
+                    entry.insert(0, data["details"])
+                elif label == "Large Image Name":
+                    entry.insert(0, data["large_image"])
+                elif label == "Large Image Text":
+                    entry.insert(0, data["large_text"])
+                elif label == "Small Image Name":
+                    entry.insert(0, data["small_text"])
+                elif label == "Button 1 Label":
+                    entry.insert(0, data["Button 1 Label"])
+                elif label == "Button 1 Link":
+                    entry.insert(0, data["Button 1 Link"])
+                elif label == "Button 2 Label":
+                    entry.insert(0, data["Button 2 Label"])
+                elif label == "Button 2 Link":
+                    entry.insert(0, data["Button 2 Link"])
+            except (KeyError, IndexError, AttributeError):  # Since no point failing on these.
+                pass
+
+
+def main():
     root = tk.Tk()
     root.resizable(width=False, height=False)
-    presgui = PresenceGUI(root)
-    root.mainloop()
+    Presence_Class = PresenceGUI(root)
+    try:
+        root.mainloop()
+    finally:
+        Presence_Class._stop_rpc()
+
+
+if __name__ == "__main__":
+    main()
