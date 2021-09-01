@@ -15,6 +15,17 @@ NO_CLIENT_MESSAGE = {
     )
 }
 
+BUTTON_MESSAGE = {
+    "Buttons": (
+        "Buttons MUST have a link tied to it. "
+        "If you don't want it to link to anything, you can use: "
+        "https://localhost/\n\n"
+        "This will work and won't link to anywhere as it's acting "
+        "as a local source.\n\n We put it in for you "
+        "so the program doesn't stop."
+    )
+}
+
 # Look at https://www.geeksforgeeks.org/python-tkinter-validating-entry-widget/ for entry
 # https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
 # menu https://www.geeksforgeeks.org/changing-the-colour-of-tkinter-menu-bar/
@@ -210,6 +221,7 @@ class PresenceGUI:
         }
         button_type = ["Button 1 Label", "Button 1 Link", "Button 2 Label", "Button 2 Link"]
         button_dict = {"buttons": [{"label": "", "url": ""}, {"label": "", "url": ""}]}
+        raise_button_link = False
         for entry in entries:
             field = entry[0]
             text = entry[1].get()
@@ -223,7 +235,9 @@ class PresenceGUI:
                         else:
                             button_dict["buttons"][0]["label"] = text
                     elif field == "Button 1 Link":
-                        button_dict["buttons"][0]["url"] = text
+                        if not text:
+                            raise_button_link = True
+                        button_dict["buttons"][0]["url"] = text if text else "https://localhost/"
                     if button_dict.get("buttons"):
                         if field == "Button 2 Label":
                             if not text:
@@ -231,13 +245,15 @@ class PresenceGUI:
                             else:
                                 button_dict["buttons"][1]["label"] = text
                         elif field == "Button 2 Link":
-                            if not text:
-                                try:
-                                    button_dict["buttons"].pop(1)
-                                except IndexError:
-                                    continue
-                            else:
-                                button_dict["buttons"][1]["url"] = text
+                            try:
+                                if button_dict.get("buttons")[1]:
+                                    if not text:
+                                        raise_button_link = True
+                                    button_dict["buttons"][1]["url"] = (
+                                        text if text else "https://localhost/"
+                                    )
+                            except (KeyError, IndexError):
+                                continue
 
                     entry_dict["buttons"] = button_dict["buttons"]
             else:
@@ -246,6 +262,9 @@ class PresenceGUI:
                 else:
                     entry_dict.pop(field)
         # print(entry_dict)
+        if raise_button_link is True:
+            self._error_window(BUTTON_MESSAGE)
+
         return entry_dict
 
     def temp_rpc(self, entry_info):
