@@ -1,17 +1,26 @@
-import asyncio
 import pathlib
 import pickle
 import tkinter as tk
 from datetime import datetime, timedelta
 from tkinter import messagebox
 
-from pypresence import Presence
+from pypresence import Presence, exceptions
 
 NO_CLIENT_MESSAGE = {
     "No Client ID": (
         "No Client ID listed.\n"
         "You MUST have a client_id from your application for this program to work.\n\n"
         "Please read the README.md file to review how to get your ID."
+    )
+}
+
+INVALID_CLIENT_MESSAGE = {
+    "Invalid Client ID": (
+        "Invalid Client ID. Please review the help menu or README.md "
+        "documentation on how to get your proper client id.\n\n"
+        "This will not work without the proper Client ID.\n\nIf this"
+        " is shown in error and that IS your valid Client ID. Please "
+        "reach out to me. I had to do something hacky regarding this."
     )
 }
 
@@ -299,8 +308,16 @@ class PresenceGUI:
         now = datetime.now()
         self.wait_until = now + timedelta(seconds=15)
 
-        self.RPC.update(**entries)
-        self.started_rpc = True
+        try:
+            self.RPC.update(**entries)
+            self.started_rpc = True
+        except exceptions.InvalidID:
+            return self._error_window(INVALID_CLIENT_MESSAGE)
+        except Exception as error:
+            if str(error) == "unpack requires a buffer of 8 bytes":
+                return self._error_window(INVALID_CLIENT_MESSAGE)
+            else:
+                raise error  # Odd...but I need to know if there's any other issues.
 
     def _stop_rpc(self):
         if not self.RPC:
