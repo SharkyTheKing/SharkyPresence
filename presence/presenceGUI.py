@@ -41,6 +41,7 @@ class PresenceGUI:
         self.master.iconbitmap(self.icon_path)
 
         self.started_rpc = False
+        self.RPC = None
         self.wait_until = None
         self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
@@ -53,13 +54,17 @@ class PresenceGUI:
 
         b1 = tk.Button(self.master, text="Process", command=(lambda e=ents: self.temp_rpc(e)))
         b1.pack(side=tk.LEFT, padx=5, pady=5)
-        b2 = tk.Button(self.master, text="Quit", command=(lambda e=ents: self._save_state(e)))
+
+        b2 = tk.Button(self.master, text="Stop", command=(lambda e=self.master: self._stop_rpc()))
         b2.pack(side=tk.LEFT, padx=5, pady=5)
+
         b3 = tk.Button(
             self.master, text="Help", command=(lambda e=self.master: self.help_window())
         )
         b3.pack(side=tk.RIGHT, padx=5, pady=5)
 
+        # b4 = tk.Button(self.master, text="Quit", command=(lambda e=ents: self._save_state(e)))
+        # b4.pack(side=tk.LEFT, padx=5, pady=5)
         self.master.wm_protocol("WM_DELETE_WINDOW", (lambda e=ents: self._save_state(e)))
 
     def presence_form(self, fields):
@@ -278,6 +283,12 @@ class PresenceGUI:
         self.RPC.update(**entries)
         self.started_rpc = True
 
+    def _stop_rpc(self):
+        if not self.RPC:
+            return
+        self.RPC.close()
+        self.started_rpc = False
+
     def _save_state(self, entry):
         text = entry[0][1].get()  # client_id
         # entry[0][1].delete(0, tk.END)
@@ -351,8 +362,11 @@ class PresenceGUI:
 def main():
     root = tk.Tk()
     root.resizable(width=False, height=False)
-    PresenceGUI(root)
-    root.mainloop()
+    Presence_Class = PresenceGUI(root)
+    try:
+        root.mainloop()
+    finally:
+        Presence_Class._stop_rpc()
 
 
 if __name__ == "__main__":
