@@ -74,7 +74,7 @@ class PresenceGUI:
     def start_building_widget(self):
         ents = self.presence_form(self.DICT_OF_FIELDS)
 
-        b1 = tk.Button(self.master, text="Process", command=(lambda e=ents: self.temp_rpc(e)))
+        b1 = tk.Button(self.master, text="Start", command=(lambda e=ents: self.temp_rpc(e)))
         b1.pack(side=tk.LEFT, padx=5, pady=5)
 
         b2 = tk.Button(self.master, text="Stop", command=(lambda e=self.master: self._stop_rpc()))
@@ -286,7 +286,7 @@ class PresenceGUI:
                 return self._error_window(
                     {
                         "Timeout Error": (
-                            "Please do not repeatedly push process.\n\n"
+                            "Please do not repeatedly push start.\n\n"
                             "You must wait 15 seconds before you update your status.\n\n"
                             "You have {seconds} seconds left to wait.".format(seconds=time_left)
                         )

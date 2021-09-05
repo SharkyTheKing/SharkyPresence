@@ -18,7 +18,7 @@ This readme is a work in progress.
 > python .\presence\presenceGUI.py
 ```
 
-> You should now have a neat lil' window with a buncha empty text boxes (hereforth refered to as the '**App**'). We still have to set the right values and hit the `Process` button for it to work!
+> You should now have a neat lil' window with a buncha empty text boxes (hereforth refered to as the '**App**'). We still have to set the right values and hit the `Start` button for it to work!
 
 
 ## Fill out them text boxes:
@@ -36,6 +36,6 @@ This readme is a work in progress.
 ## Making it show on discord
 1. Launch Discord desktop app.
 2. Make sure the Game Activity is enabled (Discord Settings -> Activity Status -> Display current activity as a status message)
-3. In the App, click the `Process` button.
+3. In the App, click the `Start` button.
 
 **Note:** *If you restart Discord, you may need to restart the *App.
