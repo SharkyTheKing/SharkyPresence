@@ -1,3 +1,4 @@
+import os
 import pathlib
 import pickle
 import tkinter as tk
@@ -63,7 +64,12 @@ class PresenceGUI:
         self.started_rpc = False
         self.RPC = None
         self.wait_until = None
-        self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
+        self.restore_file = pathlib.Path(__file__).parent.absolute() / "data/settings.pickle"
+        p = pathlib.Path(f"{pathlib.Path(__file__).parent.absolute()}")
+
+        for folder in p.iterdir():
+            print(folder.name)
+        print(os.listdir(pathlib.Path(__file__).parent))
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         self.start_building_widget()
