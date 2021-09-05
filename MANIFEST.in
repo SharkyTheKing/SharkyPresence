@@ -1,1 +1,1 @@
-recursive-include presence *
+recursive-include presence/data *
