@@ -58,7 +58,7 @@ class PresenceGUI:
         self.master.title("Sharky PyPresence")
         self.master.geometry("435x320")
         self.master.configure(bg="gray")
-        self.master.iconbitmap(self.icon_path)
+        # self.master.iconbitmap(self.icon_path)
 
         self.started_rpc = False
         self.RPC = None
@@ -169,7 +169,7 @@ class PresenceGUI:
         helpwindow.title("Help Menu")
         helpwindow.geometry("400x400")
         helpwindow.config(bg="gray")
-        helpwindow.iconbitmap(self.icon_path)
+        # helpwindow.iconbitmap(self.icon_path)
         helpwindow.resizable(width=False, height=False)
 
         message = (
