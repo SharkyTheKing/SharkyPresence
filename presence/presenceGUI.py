@@ -335,7 +335,6 @@ class PresenceGUI:
             label = widget[0]
             text = widget[1].get()
             data[label] = text
-        print(data)
 
         try:
             with open(self.restore_file, "wb") as f:
