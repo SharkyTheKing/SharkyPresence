@@ -9,7 +9,7 @@ This readme is a work in progress.
 * [Python 3](https://www.python.org/downloads/)
 * Install the requirements using:
 ```
-> pip install git+https://github.com/SharkyTheKing/SharkyPresence@fr/setupcfg-configuration
+> pip install git+https://github.com/SharkyTheKing/SharkyPresence
 ```
 
 ## Run the app:
