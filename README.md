@@ -9,13 +9,12 @@ This readme is a work in progress.
 * [Python 3](https://www.python.org/downloads/)
 * Install the requirements using:
 ```
-> cd C:\MyProjectsFolder\SharkyPresence
-> pip install -r requirements.txt
+> pip install git+https://github.com/SharkyTheKing/SharkyPresence
 ```
 
 ## Run the app:
 ```
-> python .\presence\presenceGUI.py
+> sharkypresence
 ```
 
 > You should now have a neat lil' window with a buncha empty text boxes (hereforth refered to as the '**App**'). We still have to set the right values and hit the `Start` button for it to work!
