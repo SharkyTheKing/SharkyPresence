@@ -63,7 +63,7 @@ class PresenceGUI:
         self.started_rpc = False
         self.RPC = None
         self.wait_until = None
-        self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
+        self.restore_file = pathlib.Path(__file__).parent.absolute() / "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         self.start_building_widget()
@@ -366,7 +366,6 @@ class PresenceGUI:
     def get_all_children(self, widget):
         """
         Return a list of all the children, if any, of a given widget.
-
         Credit to https://stackoverflow.com/questions/52484359/how-to-select-all-instances-of-a-widget-in-tkinter/52484948#52484948
         """
         result = []  # Initialize.
