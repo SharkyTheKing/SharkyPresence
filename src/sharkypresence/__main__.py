@@ -1,4 +1,3 @@
-import os
 import pathlib
 import pickle
 import tkinter as tk
@@ -65,7 +64,6 @@ class PresenceGUI:
         self.RPC = None
         self.wait_until = None
         self.restore_file = pathlib.Path(__file__).parent.absolute() / "data/settings.pickle"
-
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         self.start_building_widget()
@@ -74,7 +72,7 @@ class PresenceGUI:
     def start_building_widget(self):
         ents = self.presence_form(self.DICT_OF_FIELDS)
 
-        b1 = tk.Button(self.master, text="Start", command=(lambda e=ents: self.temp_rpc(e)))
+        b1 = tk.Button(self.master, text="Process", command=(lambda e=ents: self.temp_rpc(e)))
         b1.pack(side=tk.LEFT, padx=5, pady=5)
 
         b2 = tk.Button(self.master, text="Stop", command=(lambda e=self.master: self._stop_rpc()))
@@ -198,7 +196,7 @@ class PresenceGUI:
         label.pack()
         credit_label = tk.Label(helpwindow, text="Credits: SharkyTheKing", bg="gray")
         credit_label.place(relx=0.0, rely=1.0, anchor="sw")
-        version_label = tk.Label(helpwindow, text="Version: 0.0.1", bg="gray")
+        version_label = tk.Label(helpwindow, text="Version: 0.0.2", bg="gray")
         version_label.place(relx=1.0, rely=1.0, anchor="se")
 
     def _error_window(self, error: dict):
@@ -286,7 +284,7 @@ class PresenceGUI:
                 return self._error_window(
                     {
                         "Timeout Error": (
-                            "Please do not repeatedly push start.\n\n"
+                            "Please do not repeatedly push process.\n\n"
                             "You must wait 15 seconds before you update your status.\n\n"
                             "You have {seconds} seconds left to wait.".format(seconds=time_left)
                         )
@@ -365,10 +363,40 @@ class PresenceGUI:
 
         self._restore_values(data)
 
+    def get_all_children(self, widget):
+        """
+        Return a list of all the children, if any, of a given widget.
+        Credit to https://stackoverflow.com/questions/52484359/how-to-select-all-instances-of-a-widget-in-tkinter/52484948#52484948
+        """
+        result = []  # Initialize.
+        return self._all_children(widget.winfo_children(), result)
+
+    def _all_children(self, children, result):
+        """
+        Recursively append all children of a list of widgets to result.
+        """
+        for child in children:
+            result.append(child)
+            subchildren = child.winfo_children()
+            if subchildren:
+                self._all_children(subchildren, result)
+
+        return result
+
     def _restore_values(self, data):
         """
         Internal function to restore all entry state in UI
         """
+        toplevel = self.master.winfo_toplevel()
+        selection = [child for child in self.get_all_children(toplevel)]
+        try:
+            selection[-9].insert(0, data["Button 1 Label"])  # button 1 label entry
+            selection[-8].insert(0, data["Button 1 Link"])  # button 1 link entry
+            selection[-5].insert(0, data["Button 2 Label"])  # button 2 label entry
+            selection[-4].insert(0, data["Button 2 Link"])  # button 2 link
+        except (KeyError, IndexError, AttributeError):
+            pass
+
         for child in self.master.winfo_children():
             try:
                 label = child.winfo_children()[0]["text"]
