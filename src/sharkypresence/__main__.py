@@ -63,7 +63,7 @@ class PresenceGUI:
         self.started_rpc = False
         self.RPC = None
         self.wait_until = None
-        self.restore_file = pathlib.Path(__file__).parent / "data/settings.pickle"
+        self.restore_file = pathlib.Path(__file__).parent.absolute() / "data/settings.pickle"
         # https://stackoverflow.com/questions/33553200/save-and-load-gui-tkinter
 
         self.start_building_widget()
