@@ -87,6 +87,15 @@ class PresenceGUI:
         # b4.pack(side=tk.LEFT, padx=5, pady=5)
         self.master.wm_protocol("WM_DELETE_WINDOW", (lambda e=ents: self._save_state(e)))
 
+    def allow_for_resize(self):
+        """
+        Allow for user to resize
+        """
+        self.master.resizable(width=True, height=True)
+
+    def disable_resize(self):
+        self.master.resizable(width=False, height=False)
+
     def presence_form(self, fields):
         entries = []
         did_buttons = False
@@ -149,6 +158,15 @@ class PresenceGUI:
                 lab.pack(side=tk.LEFT)
                 ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
                 entries.append((key, ent))
+
+        setbar = tk.Menu(self.master)
+        menubar = tk.Menu(setbar, tearoff=0)
+        menubar.add_command(label="Set Size", command=self.allow_for_resize)
+        menubar.add_command(label="Lock Size", command=self.disable_resize)
+        setbar.add_cascade(label="Resize", menu=menubar)
+        # look into later
+        self.master.config(menu=setbar)
+
         return entries
 
     def _client_callback(self, client_input):
@@ -421,7 +439,12 @@ class PresenceGUI:
                     entry.insert(0, data["Button 2 Label"])
                 elif label == "Button 2 Link":
                     entry.insert(0, data["Button 2 Link"])
-            except (KeyError, IndexError, AttributeError):  # Since no point failing on these.
+            except (
+                KeyError,
+                IndexError,
+                AttributeError,
+                Exception,
+            ):  # Since no point failing on these.
                 pass
 
 
