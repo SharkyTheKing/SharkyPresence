@@ -95,6 +95,8 @@ class PresenceGUI:
             if key == "buttons":
                 if not did_buttons:
                     # need to create 4 entries w/ different labels
+                    reg = self.master.register(self._limit_characters)
+
                     button_one_label = tk.Label(
                         row, width=11, text="Button 1 Label", anchor="w", bg="gray"
                     )
@@ -117,11 +119,13 @@ class PresenceGUI:
 
                     button_one_label.grid(row=8, column=1, sticky=tk.W, rowspan=tk.YES)
                     button_one_link.grid(row=8, column=3, sticky=tk.W, rowspan=tk.YES)
+                    b_One_label_entry.config(validate="key", validatecommand=(reg, "%P"))
                     b_One_label_entry.grid(row=8, column=2, padx=3, pady=1, rowspan=tk.YES)
                     b_One_link_entry.grid(row=8, column=4, padx=3, pady=1, rowspan=tk.YES)
 
                     button_two_label.grid(row=9, column=1, sticky=tk.W, rowspan=tk.YES)
                     button_two_link.grid(row=9, column=3, sticky=tk.W, rowspan=tk.YES)
+                    b_Two_label_entry.config(validate="key", validatecommand=(reg, "%P"))
                     b_Two_label_entry.grid(row=9, column=2, padx=3, pady=1, rowspan=tk.YES)
                     b_Two_link_entry.grid(row=9, column=4, padx=3, pady=1, rowspan=tk.YES)
 
@@ -141,12 +145,23 @@ class PresenceGUI:
                 lab.pack(side=tk.LEFT)
                 ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
                 entries.append((key, ent))
-
-            else:
+            elif key in ["details", "state", "large_text", "small_text"]:
+                # need to print the keys to confirm
+                reg = self.master.register(self._limit_longer_characters)
                 lab = tk.Label(row, width=15, text=fields[key], anchor="w", bg="gray")
                 ent = tk.Entry(row)
                 row.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
                 lab.pack(side=tk.LEFT)
+                ent.config(validate="key", validatecommand=(reg, "%P"))
+                ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
+                entries.append((key, ent))
+            else:
+                reg = self.master.register(self._limit_characters)
+                lab = tk.Label(row, width=15, text=fields[key], anchor="w", bg="gray")
+                ent = tk.Entry(row)
+                row.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
+                lab.pack(side=tk.LEFT)
+                ent.config(validate="key", validatecommand=(reg, "%P"))
                 ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
                 entries.append((key, ent))
         return entries
@@ -159,6 +174,26 @@ class PresenceGUI:
             return True
         else:
             return False
+
+    def _limit_characters(self, character_input):
+        """
+        Internal Function to check character limits of entry
+        Currently 32 limitation for Buttons and Images
+        """
+        if len(character_input) > 32:
+            return False
+        else:
+            return True
+
+    def _limit_longer_characters(self, character_input):
+        """
+        Same as above
+        Currently 128 for details, state, large and small text
+        """
+        if len(character_input) > 128:
+            return False
+        else:
+            return True
 
     def help_window(self):
         """
