@@ -35,6 +35,13 @@ BUTTON_MESSAGE = {
     )
 }
 
+RESTART_DISCORD_MESSAGE = {
+    "Discord Failed": (
+        "If you are seeing this error, it means something on discord's end dropped. "
+        "Please restart your discord client and hit process to restart the presence."
+    )
+}
+
 # Look at https://www.geeksforgeeks.org/python-tkinter-validating-entry-widget/ for entry
 # https://stackoverflow.com/questions/4140437/interactively-validating-entry-widget-content-in-tkinter
 # menu https://www.geeksforgeeks.org/changing-the-colour-of-tkinter-menu-bar/
@@ -305,7 +312,6 @@ class PresenceGUI:
                     entry_dict[field] = text
                 else:
                     entry_dict.pop(field)
-        # print(entry_dict)
         if raise_button_link is True:
             self._error_window(BUTTON_MESSAGE)
 
@@ -350,7 +356,7 @@ class PresenceGUI:
             return self._error_window(INVALID_CLIENT_MESSAGE)
         except Exception as error:
             if str(error) == "unpack requires a buffer of 8 bytes":
-                return self._error_window(INVALID_CLIENT_MESSAGE)
+                return self._error_window(RESTART_DISCORD_MESSAGE)
             else:
                 raise error  # Odd...but I need to know if there's any other issues.
 
@@ -361,10 +367,8 @@ class PresenceGUI:
         self.started_rpc = False
 
     def _save_state(self, entry):
-        text = entry[0][1].get()  # client_id
-        # entry[0][1].delete(0, tk.END)
-        # entry[0][1].insert(0, "234235") # example.
-        data = {}  # "client_id": text}
+        text = entry[0][1].get()
+        data = {}
 
         for widget in entry:
             label = widget[0]
