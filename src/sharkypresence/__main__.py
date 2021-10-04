@@ -238,7 +238,7 @@ class PresenceGUI:
         label.pack()
         credit_label = tk.Label(helpwindow, text="Credits: SharkyTheKing", bg="gray")
         credit_label.place(relx=0.0, rely=1.0, anchor="sw")
-        version_label = tk.Label(helpwindow, text="Version: 1.0.2", bg="gray")
+        version_label = tk.Label(helpwindow, text="Version: 1.0.3", bg="gray")
         version_label.place(relx=1.0, rely=1.0, anchor="se")
 
     def _error_window(self, error: dict):
